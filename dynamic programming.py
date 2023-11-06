@@ -245,13 +245,33 @@ def same_policy(policy1, policy2):
             if policy1[s][a] != policy2[s][a]:
                 return False
     return True
+
+def test_pi(env, pi, num_episodes=1000):
+    """
+    测试策略。
+    参数：
+        env -- OpenAI Gym环境对象。
+        pi -- 需要测试的策略。
+        num_episodes -- 进行测试的回合数。
+
+    返回值：
+        成功到达终点的频率。
+    """
+
+    count = 0
+    for e in range(num_episodes):
+        ob = env.reset()
+        while True:
+            a = pi[ob]
+            ob, rew, done, _ = env.step(a)
+            if done:
+                count += 1 if rew == 1 else 0
+                break
+    return count / num_episodes
   
 
 env = gym.make("FrozenLake-v1")
 env.reset()
-
-# gamedemo(env)
-# exit(0)
 
 env.reset()
 policyPI, valuePI = policy_iteration(env, gamma=0.95)
@@ -260,6 +280,8 @@ policyPI, valuePI = policy_iteration(env, gamma=0.95)
 
 env.reset()
 policyVI, valueVI, _ = value_iteration(env, theta = 1e-10, gamma=0.5)
+# pi = policyVI.argmax(axis=1)
+# print(test_pi(env, pi))
 # print(policyVI)
 # print(valueVI)
 
